@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         displayView(R.id.nav_user_info);
+        //displayView(R.id.nav_login);
     }
 
     @Override
@@ -176,6 +177,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_logout:
                 Toast.makeText(this, "Bye!", Toast.LENGTH_SHORT).show();
+                finish();
+            case R.id.nav_login:
+                fragment = new LoginPageFragment();
                 finish();
             default:
                 fragment = new WelcomeLanding();
