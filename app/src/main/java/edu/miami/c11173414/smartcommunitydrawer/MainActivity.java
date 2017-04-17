@@ -50,8 +50,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        displayView(R.id.nav_user_info);
-        //displayView(R.id.nav_login);
+        //displayView(R.id.nav_user_info);
+        displayView(new LoginPageFragment());
     }
 
     @Override
@@ -83,7 +83,6 @@ public class MainActivity extends AppCompatActivity
                 viewIsAtHome = false;
                 break;
             case R.id.report_photo:
-
                 break;
             case R.id.listitem_pic:
                 // Consider adding a zoom function, using zoomdialog
@@ -143,6 +142,10 @@ public class MainActivity extends AppCompatActivity
         String title = getString(R.string.app_name);
 
         switch (viewId) {
+            case R.id.nav_login:
+                fragment = new LoginPageFragment();
+                viewIsAtHome = false;
+                break;
             case R.id.nav_report:
                 title  = "Report";
                 Log.i("displayView:", "opening report fragment");
@@ -160,7 +163,6 @@ public class MainActivity extends AppCompatActivity
                 Log.i("displayView:", "opening search fragment");
                 fragment = new ReportListFragment();
                 viewIsAtHome = false;
-
                 break;
             case R.id.nav_user_info:
                 title = "About me";
@@ -178,9 +180,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_logout:
                 Toast.makeText(this, "Bye!", Toast.LENGTH_SHORT).show();
                 finish();
-            case R.id.nav_login:
-                fragment = new LoginPageFragment();
-                finish();
+                break;
             default:
                 fragment = new WelcomeLanding();
                 break;

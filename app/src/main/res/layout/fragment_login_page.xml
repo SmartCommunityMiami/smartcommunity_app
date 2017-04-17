@@ -30,7 +30,7 @@
             android:id="@+id/password_login_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Username"/>
+            android:hint="Password"/>
         <Button
             android:id="@+id/login_submit_button"
             android:text="Log In"
