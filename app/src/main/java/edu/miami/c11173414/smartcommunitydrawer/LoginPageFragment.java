@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-
 public class LoginPageFragment extends Fragment implements View.OnClickListener {
     View fragmentLayout;
     public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
@@ -23,8 +22,6 @@ public class LoginPageFragment extends Fragment implements View.OnClickListener 
         }else {
             loginSubmit.setOnClickListener(this);
         }
-        // HttpClient httpclient = HttpClients.createDefault();
-        // HttpPost httppost = new HttpPost("http://www.a-domain.com/foo/");
 
 
         return(fragmentLayout);
