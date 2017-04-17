@@ -1,7 +1,5 @@
 package edu.miami.c11173414.smartcommunitydrawer;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -22,8 +20,6 @@ public class LoginPageFragment extends Fragment implements View.OnClickListener 
         }else {
             loginSubmit.setOnClickListener(this);
         }
-
-
         return(fragmentLayout);
     }
 
