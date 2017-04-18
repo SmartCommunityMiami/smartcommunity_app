@@ -1,7 +1,6 @@
 package edu.miami.c11173414.smartcommunitydrawer;
 
-import android.content.Context;
-import android.net.Uri;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -12,21 +11,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import org.apache.http.HttpConnection;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
+
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.impl.client.HttpClients;
 
 import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+
+
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,8 +40,6 @@ public class LoginPageFragment extends Fragment implements View.OnClickListener 
         }else {
             loginSubmit.setOnClickListener(this);
         }
-
-
         return(fragmentLayout);
     }
 
@@ -78,6 +73,7 @@ public class LoginPageFragment extends Fragment implements View.OnClickListener 
         return false;
     }
 
+    /**
     private boolean sendLoginRequestApache(String username, String password){
         HttpClient httpClient;
         HttpPost httppost;
@@ -113,6 +109,7 @@ public class LoginPageFragment extends Fragment implements View.OnClickListener 
         }
         return false;
     }
+     **/
 
     @Override
     public void onClick(View view) {
@@ -123,6 +120,7 @@ public class LoginPageFragment extends Fragment implements View.OnClickListener 
         userName = usernameField.getText().toString();
         password = passwordField.getText().toString();
         Log.i("onClick:", "U: " + userName + " P: " + password);
+        Toast.makeText(getActivity(), "U: " + userName + " P: " + password +"", Toast.LENGTH_SHORT).show();
     }
 
 }
