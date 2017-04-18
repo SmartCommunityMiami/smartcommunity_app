@@ -15,4 +15,5 @@
         <item>Roads</item>
         <item>Sidewalks</item>
     </string-array>
+    <string name="title_activity_create_account">CreateAccountActivity</string>
 </resources>

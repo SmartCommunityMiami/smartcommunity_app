@@ -21,17 +21,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final int ACTIVITY_SELECT_PICTURE = 1; // Activity ID for picture selection
     private boolean viewIsAtHome = true;
+    protected String sessionUser;
+    protected String userFullName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        sessionUser = this.getIntent().getStringExtra(getPackageName()+".username");
+        userFullName = this.getIntent().getStringExtra(getPackageName()+".fullname");
+
 
         //TODO this better. As of now it is only workaround for NetworkOnMainThread Exception
         if (android.os.Build.VERSION.SDK_INT > 9) {
@@ -49,9 +55,14 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View hView =  navigationView.getHeaderView(0);
+        TextView nav_user = (TextView)hView.findViewById(R.id.user_fullname_display);
+        nav_user.setText(userFullName);
+        TextView nav_email = (TextView)hView.findViewById(R.id.user_email_textview);
+        nav_email.setText(sessionUser + "@smartcommunity.com");
 
         //displayView(R.id.nav_user_info);
-        displayView(new LoginPageFragment());
+        displayView(new WelcomeLanding());
     }
 
     @Override
@@ -142,10 +153,6 @@ public class MainActivity extends AppCompatActivity
         String title = getString(R.string.app_name);
 
         switch (viewId) {
-            case R.id.nav_login:
-                fragment = new LoginPageFragment();
-                viewIsAtHome = false;
-                break;
             case R.id.nav_report:
                 title  = "Report";
                 Log.i("displayView:", "opening report fragment");
@@ -179,6 +186,8 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_logout:
                 Toast.makeText(this, "Bye!", Toast.LENGTH_SHORT).show();
+                Intent returnIntent = new Intent();
+                setResult(RESULT_OK,returnIntent);
                 finish();
                 break;
             default:

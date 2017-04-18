@@ -18,6 +18,10 @@
         <item name="android:textSize">20sp</item>
     </style>
 
+    <style name="editText_style">
+        <item name="background">@color/colorWhite</item>
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
