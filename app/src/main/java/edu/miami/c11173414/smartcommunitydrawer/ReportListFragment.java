@@ -35,7 +35,7 @@ public class ReportListFragment extends ListFragment {
         for(int i = 0; i < jsonArray.length(); i++) {
             HashMap<String, Object> map = new HashMap<String, Object>();
             try {
-                map.put("name", jsonArray.getJSONObject(i).getJSONObject("user").getString("username"));
+                map.put("name", jsonArray.getJSONObject(i).getString("description"));
             } catch (Exception e) {
                 Log.e("ReportListView", "failure retriving username from json array/object. Stack trace:\n");
                 e.printStackTrace();
