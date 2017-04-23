@@ -10,10 +10,84 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string-array name="classifications_array">
-        <item>Power</item>
         <item>Water</item>
+        <item>Transportation</item>
+        <item>Electricity</item>
+        <item>Wildlife</item>
+    </string-array>
+    <string-array name="water_subarray">
+        <item>Broken/Missing Water Cover</item>
+        <item>Flooding</item>
+        <item>Water Quality</item>
+        <item>Waste Water</item>
+        <item>Canals</item>
+    </string-array>
+    <string-array name="flooding_subarray">
+        <item>Water Main Break</item>
+        <item>Natural Flooding</item>
+    </string-array>
+    <string-array name="quality_subarray">
+        <item>Freshwater</item>
+        <item>Saltwater Intrusion</item>
+        <item>Disease</item>
+        <item>Standing Water</item>
+    </string-array>
+    <string-array name="waste_subarray">
+        <item>General</item>
+        <item>Spills/Overflows</item>
+    </string-array>
+    <string-array name="canals_subarray">
+        <item>Dangerous Trees on Bank</item>
+        <item>Blocked Canal</item>
+        <item>Canal Culvert Blocked</item>
+        <item>Canal Bank Needs Mowing</item>
+        <item>Canal Needs Cleaning</item>
+    </string-array>
+    <string-array name="transportation_subarray">
+        <item>Signs</item>
         <item>Roads</item>
-        <item>Sidewalks</item>
+        <item>Traffic Lights</item>
+    </string-array>
+    <string-array name="signs_subarray">
+        <item>Traffic Signs</item>
+        <item>Street Sign Name Issue</item>
+        <item>Stop Sign Issue</item>
+    </string-array>
+    <string-array name="roads_subarray">
+        <item>Pothole</item>
+        <item>Damaged Sidewalk</item>
+        <item>Quality</item>
+        <item>Traffic Lights</item>
+    </string-array>
+    <string-array name="electricity_subarray">
+        <item>Lights</item>
+        <item>Power Lines</item>
+        <item>Outage/Blackout/Surges</item>
+    </string-array>
+    <string-array name="lights_subarray">
+        <item>Streetlights</item>
+        <item>Traffic Lights</item>
+    </string-array>
+    <string-array name="wildlife_subarray">
+        <item>Lost Animal</item>
+        <item>Dead Animal Removal</item>
+        <item>Animal Bite</item>
+        <item>Animal Infestation</item>
+    </string-array>
+    <string-array name="dead_animal_subarray">
+        <item>On US-1/Kendall/Birdroad/Tamiami/Expressway</item>
+        <item>State Road North of NW-54 ST</item>
+        <item>State Road South of NW-54 ST</item>
+        <item>On Florida Turnpike/Sawgrass/Homestead Extension</item>
+        <item>Public Waters</item>
+        <item>Large Scale Fish/Duck Kills</item>
+    </string-array>
+    <string-array name="animal_infestation_subarray">
+        <item>Crocodile/Alligator</item>
+        <item>Mosquitoes</item>
+        <item>Snakes</item>
+        <item>Tegus</item>
+        <item>Iguanas</item>
     </string-array>
     <string name="title_activity_create_account">CreateAccountActivity</string>
 </resources>
