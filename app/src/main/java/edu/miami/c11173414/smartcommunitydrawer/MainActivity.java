@@ -4,6 +4,9 @@ package edu.miami.c11173414.smartcommunitydrawer;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -24,16 +27,27 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, LocationListener {
     private static final int ACTIVITY_SELECT_PICTURE = 1; // Activity ID for picture selection
+    private static final int ACTIVITY_SELECT_LOCATION = 2;
     private boolean viewIsAtHome = true;
     protected String sessionUser;
     protected String userFullName;
+    public LocationManager locationManager;
+    public Location currentLocation;
+    private Boolean gpsWorking = false;
+    private Boolean netWorking = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        locationManager = (LocationManager)(getSystemService(LOCATION_SERVICE));
+        detectLocators();
 
         sessionUser = this.getIntent().getStringExtra(getPackageName()+".username");
         userFullName = this.getIntent().getStringExtra(getPackageName()+".fullname");
@@ -112,6 +126,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 parent = (LinearLayout)view.getParent();
                 parent.setBackgroundColor(Color.parseColor("#FF0000"));
                 break;
+            case R.id.location_change_button:
+                // TODO: create map interface to select new location
+                Intent nextIntent = new Intent();
+                nextIntent.setClassName(getPackageName(), getPackageName()+".LocationSelect");
+                startActivityForResult(nextIntent, ACTIVITY_SELECT_LOCATION);
             default:
                 break;
         }
@@ -177,7 +196,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Log.i("displayView:", "opening about me fragment");
                 fragment = new WelcomeLanding();
                 viewIsAtHome = true;
-
                 break;
             case R.id.nav_my_reports:
                 title = "My Reports";
@@ -244,6 +262,121 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivityForResult(galleryIntent,ACTIVITY_SELECT_PICTURE);
     }
 
+
+    private void detectLocators() {
+
+        List<String> locators;
+
+        locators = locationManager.getProviders(true);
+        for (String aProvider : locators) {
+            if (aProvider.equals(LocationManager.GPS_PROVIDER)) {
+                Toast.makeText(this,"GPS available",Toast.LENGTH_LONG).show();
+                gpsWorking = true;
+                try {
+                    locationManager.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER, getResources().getInteger(
+                                    R.integer.time_between_location_updates_ms), 0, this);
+                }catch (SecurityException e){
+                    Log.i("HAHA ", "Should handle this but not");
+                    e.printStackTrace();
+                }
+            }
+            if (aProvider.equals(LocationManager.NETWORK_PROVIDER)) {
+                Toast.makeText(this,"Network available",Toast.LENGTH_LONG).show();
+                netWorking = true;
+                try {
+                    locationManager.requestLocationUpdates(
+                            LocationManager.NETWORK_PROVIDER, getResources().getInteger(
+                                    R.integer.time_between_location_updates_ms), 0, this);
+                }catch (SecurityException e){
+                    Log.i("HAHA ", "Should handle this but not");
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
+    @Override
+    public void onResume() {
+        String[] providers = {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER};
+        int providerIndex;
+        Location lastLocation;
+        String errorMessage = "";
+
+        super.onResume();
+        currentLocation = null;
+        providerIndex = 0;
+
+        while (currentLocation == null && providerIndex < providers.length) {
+            try {
+                if ((lastLocation =
+                        locationManager.getLastKnownLocation(providers[providerIndex])) != null &&
+                        (System.currentTimeMillis() - lastLocation.getTime()) < getResources().getInteger(R.integer.threshold_for_last_location_ms)) {
+                    currentLocation = lastLocation;
+                    onLocationChanged(currentLocation);
+                    return;
+                }
+                providerIndex++;
+            } catch (SecurityException e) {
+                errorMessage = e.getMessage();
+            }
+        }
+        Toast.makeText(this,"No previous location available" + errorMessage, Toast.LENGTH_LONG).show();
+    }
+    /**
+     * @param newLocation
+     * Handles when a location has changed
+     * Use this method to repopulate textviews,
+     * Also get info to send to API
+     */
+    public void onLocationChanged(Location newLocation) {
+        Log.i("onLocationChanged: ", "got a new location, boss");
+        TextView locationView = (TextView)findViewById(R.id.current_location);
+        String whereAmI="";
+
+        DecodeLocation d = new DecodeLocation(getApplicationContext(),this);
+        String decoded = d.doInBackground(newLocation);
+        Log.i("onLocationChanged: ", "decoded location is " + decoded);
+
+        whereAmI+= "(" + newLocation.getLatitude() + ", " + newLocation.getLongitude() + ")";
+        try {
+            locationView.setText(whereAmI);
+            locationView.setText(decoded);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            locationManager.removeUpdates(this);
+        } catch (SecurityException e) {
+            Toast.makeText(this,"Cannot removeUpdates" + e.getMessage(),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+
+    }
+
+
     /**
      * Handles results from gallery picture selection and picture evaluation
      * @param requestCode Identifier to identify which activity is sending the intent back here
@@ -260,6 +393,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     pictureView.setImageURI(selectedURI);
                 }
                 break;
+            case ACTIVITY_SELECT_LOCATION:
+                double lat, lon;
+                lat = data.getDoubleExtra(getPackageName()+"LocationSelect.latitude", 0);
+                lon = data.getDoubleExtra(getPackageName()+"LocationSelect.latitude", 0);
+                Location newLocation = new Location("");
+                newLocation.setLatitude(lat);
+                newLocation.setLongitude(lon);
+                onLocationChanged(newLocation);
         }
     }
 }
