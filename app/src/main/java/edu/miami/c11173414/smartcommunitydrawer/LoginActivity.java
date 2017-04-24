@@ -50,11 +50,13 @@ public class LoginActivity extends AppCompatActivity {
                     //we are logged in.
                 } else {
                     Toast.makeText(this, "Username or password incorrect.", Toast.LENGTH_SHORT).show();
-                    //break; //break so we dont start activity and they can try again. Leave break commented until andrew fixes http 500 error
+                    // break so we dont start activity and they can try again.
+                    // Leave break commented until andrew fixes http 500 error
+                    // break;
                 }
 
                 // TODO: Get e-mail or username string (i.e. username blakem2018 -> "Blake Maune")
-                fullname = username + " Smith";
+                fullname = username; // + " Smith";
 
                 nextActivity = new Intent();
                 nextActivity.setClassName(getPackageName(), getPackageName() + ".MainActivity");

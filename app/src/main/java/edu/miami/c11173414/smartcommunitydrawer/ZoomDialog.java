@@ -19,7 +19,7 @@ public class ZoomDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         dialogView = inflater.inflate(R.layout.fragment_zoom_dialog,container);
-        ((Button)dialogView.findViewById(R.id.zoom_dismiss_button)).setOnClickListener(myClickHandler);
+        dialogView.findViewById(R.id.zoom_dismiss_button).setOnClickListener(myClickHandler);
         ((ImageView)dialogView.findViewById(R.id.image_zoomed)).setImageResource(getArguments().getInt("picture_id"));
         return(dialogView);
     }

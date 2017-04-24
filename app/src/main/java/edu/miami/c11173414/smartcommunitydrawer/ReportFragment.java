@@ -14,15 +14,18 @@ import android.widget.Toast;
 
 public class ReportFragment extends Fragment {
     @Override
-    public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View fragmentView = inflater.inflate(R.layout.fragment_report, container, false);
+
         // TODO: Make the spinner work
-        View fragmentView = inflater.inflate(R.layout.fragment_report, container,false);
-        Spinner dropDown = (Spinner)fragmentView.findViewById(R.id.classification_spinner);
+        Spinner dropDown1 = (Spinner) fragmentView.findViewById(R.id.classification_spinner1);
+
+
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.classifications_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dropDown.setAdapter(adapter);
+        dropDown1.setAdapter(adapter);
 
-        return(fragmentView);
+        return (fragmentView);
     }
 }

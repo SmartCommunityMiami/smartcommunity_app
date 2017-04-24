@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 viewIsAtHome = false;
                 break;
             case R.id.vote_button:
-                displayView((Fragment) (new ReportListFragment()));
+                displayView(new ReportListFragment());
                 viewIsAtHome = false;
                 break;
             case R.id.search_button:
@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // Consider adding a zoom function, using zoomdialog
                 break;
             case R.id.search_go_button:
-                displayView((Fragment) (new ReportListFragment()));
+                displayView(new ReportListFragment());
                 viewIsAtHome = false;
                 break;
             case R.id.upvote_icon:
@@ -156,7 +156,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_report:
                 title  = "Report";
                 Log.i("displayView:", "opening report fragment");
-                fragment = new ReportFragment();
+                // Todo: figure out reporting & classifying
+                fragment = new ClassifyFragment();
                 viewIsAtHome = false;
                 break;
             case R.id.nav_search:
