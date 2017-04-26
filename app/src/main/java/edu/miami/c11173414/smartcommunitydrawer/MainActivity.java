@@ -331,13 +331,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Also get info to send to API
      */
     public void onLocationChanged(Location newLocation) {
-        Log.i("onLocationChanged: ", "got a new location, boss");
+        Log.i("onLocationChanged: ", "New location\n("+newLocation.getLatitude()+", "+newLocation.getLongitude());
         TextView locationView = (TextView)findViewById(R.id.current_location);
         String whereAmI="";
 
         DecodeLocation d = new DecodeLocation(getApplicationContext(),this);
         String decoded = d.doInBackground(newLocation);
-        Log.i("onLocationChanged: ", "decoded location is " + decoded);
+        String verbose = d.doInBackground(newLocation);
+        Log.i("onLocationChanged: ", "decoded location is " + verbose);
 
         whereAmI+= "(" + newLocation.getLatitude() + ", " + newLocation.getLongitude() + ")";
         try {
@@ -394,13 +395,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 break;
             case ACTIVITY_SELECT_LOCATION:
-                double lat, lon;
-                lat = data.getDoubleExtra(getPackageName()+"LocationSelect.latitude", 0);
-                lon = data.getDoubleExtra(getPackageName()+"LocationSelect.latitude", 0);
-                Location newLocation = new Location("");
-                newLocation.setLatitude(lat);
-                newLocation.setLongitude(lon);
-                onLocationChanged(newLocation);
+                if(resultCode == RESULT_OK) {
+                    double lat, lon;
+                    lat = data.getDoubleExtra(getPackageName() + "LocationSelect.latitude", 0);
+                    lon = data.getDoubleExtra(getPackageName() + "LocationSelect.longitude", 0);
+                    Location newLocation = new Location("");
+                    newLocation.setLatitude(lat);
+                    newLocation.setLongitude(lon);
+                    onLocationChanged(newLocation);
+                }else {
+                    Toast.makeText(this, "No new location found", Toast.LENGTH_SHORT).show();
+                }
         }
     }
 }

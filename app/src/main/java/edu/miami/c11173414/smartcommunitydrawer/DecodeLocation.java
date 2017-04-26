@@ -66,6 +66,13 @@ class DecodeLocation extends AsyncTask<Location,Void,String> {
         return (locationName);
     }
 
+    private String geodecodev(Location thisLocation) {
+        String locationName = "Android says\n" + androidGeodecode(thisLocation) + "\n\n";
+        locationName += "Google says\n" + googleGeodecode(thisLocation,"https://maps.googleapis.com/maps/api/geocode/xml?sensor=true&latlng=%f,%f");
+
+        return (locationName);
+    }
+
     //-----------------------------------------------------------------------------
     private String androidGeodecode(Location thisLocation) {
 

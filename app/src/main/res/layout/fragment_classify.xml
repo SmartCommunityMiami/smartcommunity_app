@@ -1,82 +1,85 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="edu.miami.c11173414.smartcommunitydrawer.ClassifyFragment">
-
-    <TextView
-        android:gravity="center"
-        android:textSize="40sp"
-        android:padding="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Classify the issue"/>
-
     <LinearLayout
         android:orientation="vertical"
-        android:gravity="center"
-        android:padding="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:text="Where is the issue?"/>
-        <TextView
-            android:id="@+id/current_location"
             android:gravity="center"
-            android:layout_width="wrap_content"
+            android:textSize="40sp"
+            android:padding="20dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:text="Current Location"/>
+            android:text="Classify the issue"/>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Where is the issue?"/>
+            <TextView
+                android:id="@+id/current_location"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="Current Location"/>
+            <Button
+                android:id="@+id/location_change_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAllCaps="false"
+                android:padding="5dp"
+                android:onClick="myClickHandler"
+                android:text="Choose other location"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:padding="20dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="What is the issue?"/>
+            <Spinner
+                android:id="@+id/classification_spinner1"
+                android:layout_margin="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <Spinner
+                android:clickable="false"
+                android:id="@+id/classification_spinner2"
+                android:layout_margin="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <Spinner
+                android:clickable="false"
+                android:id="@+id/classification_spinner3"
+                android:layout_margin="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
         <Button
-            android:id="@+id/location_change_button"
-            android:layout_width="wrap_content"
+            android:clickable="false"
+            android:id="@+id/classify_continue_button"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAllCaps="false"
-            android:padding="5dp"
-            android:onClick="myClickHandler"
-            android:text="Choose other location"/>
+            android:text="Continue"/>
     </LinearLayout>
-
-    <LinearLayout
-        android:padding="20dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:text="What is the issue?"/>
-        <Spinner
-            android:id="@+id/classification_spinner1"
-            android:layout_margin="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-        <Spinner
-            android:clickable="false"
-            android:id="@+id/classification_spinner2"
-            android:layout_margin="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-        <Spinner
-            android:clickable="false"
-            android:id="@+id/classification_spinner3"
-            android:layout_margin="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
-
-    <Button
-        android:clickable="false"
-        android:id="@+id/classify_continue_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAllCaps="false"
-        android:text="Continue"/>
-
-</LinearLayout>
+</ScrollView>
