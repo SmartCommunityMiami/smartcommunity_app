@@ -32,6 +32,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, LocationListener {
     private static final int ACTIVITY_SELECT_PICTURE = 1; // Activity ID for picture selection
     private static final int ACTIVITY_SELECT_LOCATION = 2;
+    private static final int CAMERA_REQUEST = 1888;
     private boolean viewIsAtHome = true;
     protected String sessionUser;
     protected String userFullName;
@@ -389,6 +390,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (requestCode) {
             case ACTIVITY_SELECT_PICTURE: // To handle when a user has selected a picture
                 if(resultCode== Activity.RESULT_OK){
+                    Log.i("MainAct", "we set image we pick form gallery");
                     ImageView pictureView = (ImageView)findViewById(R.id.report_photo);
                     Uri selectedURI = data.getData();
                     pictureView.setImageURI(selectedURI);
@@ -406,6 +408,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }else {
                     Toast.makeText(this, "No new location found", Toast.LENGTH_SHORT).show();
                 }
+                break;
+            case CAMERA_REQUEST:
+                if(resultCode== Activity.RESULT_OK){
+                    Log.i("MainAct", "we set image we took from camera");
+                    ImageView pictureView = (ImageView)findViewById(R.id.report_photo);
+                    Uri selectedURI = data.getData();
+                    pictureView.setImageURI(selectedURI);
+                }
+                break;
         }
     }
 }

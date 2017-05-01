@@ -15,16 +15,17 @@
         android:layout_weight="5"
         android:textSize="35sp"
         android:text="Submit a Report"
-        android:layout_marginBottom="5dp"/>
+        android:layout_marginBottom="15dp"/>
 
     <TextView
+        android:id="@+id/upload_existing_pic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add a picture of the issue"/>
+        android:text="Click here to upload an existing picture."/>
+
     <ImageView
         android:contentDescription="camera"
         android:id="@+id/report_photo"
-        android:onClick="myClickHandler"
         android:layout_marginBottom="10dp"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
@@ -32,8 +33,18 @@
         android:src="@drawable/ic_menu_camera"/>
 
     <TextView
+        android:id="@+id/take_new_photo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+
+        android:text="Click here to take a new picture."/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textStyle="bold"
         android:text="Classify the issue"/>
     <Spinner
         android:id="@+id/classification_spinner1"

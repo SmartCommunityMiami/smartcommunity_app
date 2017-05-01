@@ -1,7 +1,5 @@
 package edu.miami.c11173414.smartcommunitydrawer;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -12,7 +10,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.Toast;
 
 public class ClassifyFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
@@ -56,6 +53,7 @@ public class ClassifyFragment extends Fragment implements View.OnClickListener, 
                         selectionText,
                         Toast.LENGTH_LONG).show();
                 Log.i("Classification:", selectionText);
+                ((MainActivity)getActivity()).displayView(new ReportFragment());
             default:
                 break;
         }
