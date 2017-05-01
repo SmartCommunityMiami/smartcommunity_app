@@ -89,11 +89,13 @@ public class ReportFragment extends Fragment {
             JSONObject details = new JSONObject();
             JSONObject report = new JSONObject();
             details.put("description", description);
-            details.put("classification", classification);
+            details.put("issue_id", 1);
+            details.put("user_id", 3);
             details.put("latitude", lat);
             details.put("longitude", lng);
             report.put("report", details);
             String urlParameters = report.toString();
+            Log.i("sendReport: ", urlParameters);
 
             URL url = new URL("http://smartcommunity-dev2.us-east-1.elasticbeanstalk.com/api/reports");
             URLConnection con = url.openConnection();
@@ -122,7 +124,8 @@ public class ReportFragment extends Fragment {
             while ((output = br.readLine()) != null) {
                 System.out.println(output);
             }
-            Toast.makeText(getActivity(), "Account created!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Report created!", Toast.LENGTH_LONG).show();
+            ((MainActivity)getActivity()).displayView(new ClassifyFragment());
             return true;
         } catch (Exception e) {
             Log.i("sendCreateAcc: ", "Something went wrong"); //saying something is wrong isnt

@@ -16,7 +16,7 @@ import java.util.HashMap;
 public class ReportListFragment extends ListFragment {
     // ListView theList;
     private JSONArray jsonArray;
-    private final String URL = "http://smartcommunity-dev.us-east-1.elasticbeanstalk.com/reports.json";
+    private final String URL = "http://smartcommunity-dev2.us-east-1.elasticbeanstalk.com/api/reports";
 
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {

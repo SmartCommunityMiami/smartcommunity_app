@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected String userFullName;
     public LocationManager locationManager;
     public Location currentLocation;
-    public Location manualLocation;
     private Boolean gpsWorking = false;
     private Boolean netWorking = false;
 
@@ -335,6 +334,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     public void onLocationChanged(Location newLocation) {
         Log.i("onLocationChanged: ", "New location\n("+newLocation.getLatitude()+", "+newLocation.getLongitude());
+
+        // NEW CODE 5/1 FIX LOCATION
+        currentLocation = newLocation;
+        // NEW CODE 5/1 FIX LOCATION
+
         TextView locationView = (TextView)findViewById(R.id.current_location);
         String whereAmI="";
 
@@ -406,8 +410,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Location newLocation = new Location("");
                     newLocation.setLatitude(lat);
                     newLocation.setLongitude(lon);
-                    manualLocation = newLocation;
-                    onLocationChanged(manualLocation);
+                    currentLocation = newLocation;
+                    onLocationChanged(currentLocation);
                 }else {
                     Toast.makeText(this, "No new location found", Toast.LENGTH_SHORT).show();
                 }
