@@ -49,12 +49,14 @@
         android:src="@drawable/ic_menu_camera"/>
 
     <EditText
+        android:id="@+id/report_desc_textbox"
         android:layout_marginBottom="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="4"
         android:hint="Enter a short description of the issue"/>
     <Button
+        android:id="@+id/send_report_button"
         android:layout_marginBottom="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

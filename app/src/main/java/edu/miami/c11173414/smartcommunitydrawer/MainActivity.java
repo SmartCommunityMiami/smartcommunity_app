@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected String userFullName;
     public LocationManager locationManager;
     public Location currentLocation;
+    public Location manualLocation;
     private Boolean gpsWorking = false;
     private Boolean netWorking = false;
 
@@ -400,12 +401,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case ACTIVITY_SELECT_LOCATION:
                 if(resultCode == RESULT_OK) {
                     double lat, lon;
-                    lat = data.getDoubleExtra(getPackageName() + "LocationSelect.latitude", 0);
-                    lon = data.getDoubleExtra(getPackageName() + "LocationSelect.longitude", 0);
+                    lat = data.getDoubleExtra(getPackageName() + "LocationSelect.latitude", -1000);
+                    lon = data.getDoubleExtra(getPackageName() + "LocationSelect.longitude", -1000);
                     Location newLocation = new Location("");
                     newLocation.setLatitude(lat);
                     newLocation.setLongitude(lon);
-                    onLocationChanged(newLocation);
+                    manualLocation = newLocation;
+                    onLocationChanged(manualLocation);
                 }else {
                     Toast.makeText(this, "No new location found", Toast.LENGTH_SHORT).show();
                 }
