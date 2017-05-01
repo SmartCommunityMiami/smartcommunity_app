@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -34,19 +35,12 @@ public class ReportFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        TextView upload = null, take = null;
+        Button upload = null, take = null;
         View fragmentView = inflater.inflate(R.layout.fragment_report, container, false);
 
-        // TODO: Make the spinner work
-        Spinner dropDown1 = (Spinner) fragmentView.findViewById(R.id.classification_spinner1);
 
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.classifications_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dropDown1.setAdapter(adapter);
-        upload = (TextView) fragmentView.findViewById(R.id.upload_existing_pic);
-        take = (TextView) fragmentView.findViewById(R.id.take_new_photo);
+        upload = (Button) fragmentView.findViewById(R.id.upload_existing_pic);
+        take = (Button) fragmentView.findViewById(R.id.take_new_photo);
         upload.setOnClickListener(myClickHandlerReport);
         take.setOnClickListener(myClickHandlerReport);
         return (fragmentView);

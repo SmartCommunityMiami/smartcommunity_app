@@ -3,6 +3,7 @@ package edu.miami.c11173414.smartcommunitydrawer;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
@@ -413,8 +414,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if(resultCode== Activity.RESULT_OK){
                     Log.i("MainAct", "we set image we took from camera");
                     ImageView pictureView = (ImageView)findViewById(R.id.report_photo);
-                    Uri selectedURI = data.getData();
-                    pictureView.setImageURI(selectedURI);
+                    Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
+                    pictureView.setImageBitmap(imageBitmap);
                 }
                 break;
         }
