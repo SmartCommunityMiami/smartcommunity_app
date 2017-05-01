@@ -3,6 +3,7 @@ package edu.miami.c11173414.smartcommunitydrawer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -37,6 +38,17 @@ public class ReportFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Button upload = null, take = null;
         View fragmentView = inflater.inflate(R.layout.fragment_report, container, false);
+        TextView classText;
+
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            classText = (TextView) fragmentView.findViewById(R.id.reportClassText);
+            String classificationString = bundle.getString("Classification");
+            Log.i("ReportFragment: ", classificationString);
+            classText.setText(classificationString);
+        }else{
+            Log.i("ReportFragment: ", "bundle is null!");
+        }
 
 
         upload = (Button) fragmentView.findViewById(R.id.upload_existing_pic);

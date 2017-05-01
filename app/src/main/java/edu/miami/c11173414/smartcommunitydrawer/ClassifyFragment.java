@@ -53,7 +53,11 @@ public class ClassifyFragment extends Fragment implements View.OnClickListener, 
                         selectionText,
                         Toast.LENGTH_LONG).show();
                 Log.i("Classification:", selectionText);
-                ((MainActivity)getActivity()).displayView(new ReportFragment());
+                Fragment newReport = new ReportFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("Classification", selectionText);
+                newReport.setArguments(bundle);
+                ((MainActivity)getActivity()).displayView(newReport);
             default:
                 break;
         }
