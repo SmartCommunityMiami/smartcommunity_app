@@ -82,6 +82,7 @@ public class ReportFragment extends Fragment {
     private boolean sendReport(String description, int classification, Location curLoc) {
         float lat = (float) curLoc.getLatitude();
         float lng = (float) curLoc.getLongitude();
+        Toast.makeText(getActivity(), "Issue ID is " + classification, Toast.LENGTH_SHORT).show();
         int reportID;
 
         HttpURLConnection http = null;
@@ -89,7 +90,7 @@ public class ReportFragment extends Fragment {
             JSONObject details = new JSONObject();
             JSONObject report = new JSONObject();
             details.put("description", description);
-            details.put("issue_id", 1);
+            details.put("issue_id", classification);
             details.put("user_id", 3);
             details.put("latitude", lat);
             details.put("longitude", lng);
@@ -139,7 +140,49 @@ public class ReportFragment extends Fragment {
     }
 
     private int parseClassification(String classification){
-        return 0;
+        int classNumber = 0;
+        if(classification.contains("Broken/Missing Water Cover")){classNumber = 1;}
+        if(classification.contains("Water Main Break")){classNumber = 2;}
+        if(classification.contains("Natural Flooding")){classNumber = 3;}
+        if(classification.contains("Freshwater")){classNumber = 4;}
+        if(classification.contains("Saltwater Intrusion")){classNumber = 5;}
+        if(classification.contains("Disease")){classNumber = 6;}
+        if(classification.contains("Standing Water")){classNumber = 7;}
+        if(classification.contains("Waste Water/General")){classNumber = 8;}
+        if(classification.contains("Spills/Overflows")){classNumber = 9;}
+        if(classification.contains("Trim Trees on Bank")){classNumber = 10;}
+        if(classification.contains("Blocked Canal")){classNumber = 11;}
+        if(classification.contains("Canal Culvert Blocked")){classNumber = 12;}
+        if(classification.contains("Canal Bank Needs Mowing")){classNumber = 13;}
+        if(classification.contains("Canal Needs Cleaning")){classNumber = 14;}
+        if(classification.contains("Traffic Signs")){classNumber = 15;}
+        if(classification.contains("Street Sign Name Issue")){classNumber = 16;}
+        if(classification.contains("Stop Sign Issue")){classNumber = 17;}
+        if(classification.contains("Pothole")){classNumber = 18;}
+        if(classification.contains("Damaged Sidewalk")){classNumber = 19;}
+
+        // Quality?
+        if(classification.contains("Quality")){classNumber = 29;}
+
+        if(classification.contains("Palm Tree Frond Removal")){classNumber = 23;}
+        if(classification.contains("Traffic Lights")){classNumber = 24;}
+        if(classification.contains("Streetlights")){classNumber = 25;}
+        if(classification.contains("Power Lines Down")){classNumber = 26;}
+        if(classification.contains("Leaning Pole")){classNumber = 27;}
+        if(classification.contains("Deteriorated Pole")){classNumber = 28;}
+        if(classification.contains("Lost Animal")){classNumber = 30;}
+        if(classification.contains("On US-1")){classNumber = 31;}
+        if(classification.contains("State Road North")){classNumber = 32;}
+        if(classification.contains("State Road South")){classNumber = 33;}
+        if(classification.contains("On Florida Turnpike")){classNumber = 34;}
+        if(classification.contains("Public Waters")){classNumber = 35;}
+        if(classification.contains("Large Scale Fish/Duck Kills")){classNumber = 36;}
+
+        if(classification.contains("Animal Bite")){classNumber = 37;}
+        if(classification.contains("Crocodile/Alligator")){classNumber = 38;}
+        if(classification.contains("Mosquitoes")){classNumber = 39;}
+        if(classification.contains("Tegus")){classNumber = 40;}
+        return classNumber;
     }
 
     public void chooseAPicture() {

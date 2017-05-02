@@ -307,14 +307,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String errorMessage = "";
 
         super.onResume();
-        currentLocation = null;
         providerIndex = 0;
 
         while (currentLocation == null && providerIndex < providers.length) {
             try {
-                if ((lastLocation =
-                        locationManager.getLastKnownLocation(providers[providerIndex])) != null &&
-                        (System.currentTimeMillis() - lastLocation.getTime()) < getResources().getInteger(R.integer.threshold_for_last_location_ms)) {
+                if ((lastLocation = locationManager.getLastKnownLocation(providers[providerIndex])) != null && (System.currentTimeMillis() - lastLocation.getTime()) < getResources().getInteger(R.integer.threshold_for_last_location_ms)) {
                     currentLocation = lastLocation;
                     onLocationChanged(currentLocation);
                     return;
@@ -326,6 +323,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         Toast.makeText(this,"No previous location available" + errorMessage, Toast.LENGTH_LONG).show();
     }
+
+
+
     /**
      * @param newLocation
      * Handles when a location has changed
@@ -411,7 +411,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     newLocation.setLatitude(lat);
                     newLocation.setLongitude(lon);
                     currentLocation = newLocation;
-                    onLocationChanged(currentLocation);
+                    onLocationChanged(newLocation);
                 }else {
                     Toast.makeText(this, "No new location found", Toast.LENGTH_SHORT).show();
                 }
