@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Boolean gpsWorking = false;
     private Boolean netWorking = false;
 
+    private int user_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
+
+        //TODO actually get user id not set a default
+        user_id = 2;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -258,12 +262,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.closeDrawer(GravityCompat.START);
     }
 
-    public void chooseAPicture(){
-        // Opens picture gallery for user to select a picture, opens for result
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-        startActivityForResult(galleryIntent,ACTIVITY_SELECT_PICTURE);
-    }
-
 
     private void detectLocators() {
 
@@ -322,6 +320,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
         Toast.makeText(this,"No previous location available" + errorMessage, Toast.LENGTH_LONG).show();
+    }
+
+    public int getUserId() {
+        return user_id;
     }
 
 

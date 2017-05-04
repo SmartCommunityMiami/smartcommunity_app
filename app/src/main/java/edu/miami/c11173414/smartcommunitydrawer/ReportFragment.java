@@ -1,7 +1,9 @@
 package edu.miami.c11173414.smartcommunitydrawer;
 
 import android.content.Intent;
+import android.graphics.Bitmap.CompressFormat;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -9,15 +11,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -30,13 +42,15 @@ public class ReportFragment extends Fragment {
     private static final int CAMERA_REQUEST = 1888;
     private String classificationString;
     private Location curLoc;
+    private ImageView iv;
+    private Uri uri;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Button upload = null, take = null, submit = null;
         View fragmentView = inflater.inflate(R.layout.fragment_report, container, false);
         TextView classText;
-
+        iv = (ImageView) getView().findViewById(R.id.report_photo);
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             classText = (TextView) fragmentView.findViewById(R.id.reportClassText);
@@ -72,14 +86,14 @@ public class ReportFragment extends Fragment {
                 case R.id.send_report_button:
                     Log.i("ReportFragment: " , "clicked report submit button");
                     String desc = ((TextView)(getView().findViewById(R.id.report_desc_textbox))).getText().toString();
-                    sendReport(desc, parseClassification(classificationString), curLoc);
+                    sendReport(desc, parseClassification(classificationString), curLoc, ((MainActivity)getActivity()).getUserId());
                     break;
             }
 
         }
     };
 
-    private boolean sendReport(String description, int classification, Location curLoc) {
+    private boolean sendReport(String description, int classification, Location curLoc, int user_id) {
         float lat = (float) curLoc.getLatitude();
         float lng = (float) curLoc.getLongitude();
         Toast.makeText(getActivity(), "Issue ID is " + classification, Toast.LENGTH_SHORT).show();
@@ -91,14 +105,12 @@ public class ReportFragment extends Fragment {
             JSONObject report = new JSONObject();
             details.put("description", description);
             details.put("issue_id", classification);
-            details.put("user_id", 3);
+            details.put("user_id", user_id);
             details.put("latitude", lat);
             details.put("longitude", lng);
             report.put("report", details);
             String urlParameters = report.toString();
-            Log.i("sendReport: ", urlParameters);
-
-            URL url = new URL("http://smartcommunity-dev2.us-east-1.elasticbeanstalk.com/api/reports");
+            URL url = new URL("http://smartcommunity-dev.us-east-1.elasticbeanstalk.com/api/reports");
             URLConnection con = url.openConnection();
             http = (HttpURLConnection) con;
             http.setRequestMethod("POST"); // PUT is another valid option
@@ -113,9 +125,6 @@ public class ReportFragment extends Fragment {
                 wr.write(urlParameters.getBytes());
             }
             if (http.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
-                throw new RuntimeException("Failed : HTTP error code : " + http.getResponseCode());
-            }
-            if (http.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + http.getResponseCode());
             }
@@ -127,6 +136,16 @@ public class ReportFragment extends Fragment {
             }
             Toast.makeText(getActivity(), "Report created!", Toast.LENGTH_LONG).show();
             ((MainActivity)getActivity()).displayView(new ClassifyFragment());
+
+            //at this point we need to now send and store the picture, but first get the report id of what we just created.
+            reportID = getReportId(user_id, classification, description);
+            if (reportID != -1) {
+                File f = new File("image", reportID + ".png");
+                FileOutputStream os = new FileOutputStream(f);
+                iv.getDrawingCache().compress(CompressFormat.PNG, 100, os);
+                os.close();
+                uploadToS3(f);
+            }
             return true;
         } catch (Exception e) {
             Log.i("sendCreateAcc: ", "Something went wrong"); //saying something is wrong isnt
@@ -137,6 +156,61 @@ public class ReportFragment extends Fragment {
             }
         }
         return false;
+    }
+
+    public void uploadToS3(File f) {
+        /* code in this method taken from AWS docs with practically zero alterations */
+        String bucketName = "smartcommunity";
+        String keyName = f.getName();
+        CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                getActivity().getApplicationContext(), // Context
+                "IDENTITY_POOL_ID", // Identity Pool ID
+                Regions.US_EAST_1 // Region
+        );
+        AmazonS3 s3client = new AmazonS3Client(credentialsProvider);
+        try {
+            System.out.println("Uploading a new object to S3 from a file\n");
+            s3client.putObject(new PutObjectRequest(
+                    bucketName, keyName, f));
+            Log.i("upToS3", "File successfully uploaded");
+        } catch (AmazonServiceException ase) {
+            System.out.println("Caught an AmazonServiceException, which " +
+                    "means your request made it " +
+                    "to Amazon S3, but was rejected with an error response" +
+                    " for some reason.");
+            System.out.println("Error Message:    " + ase.getMessage());
+            System.out.println("HTTP Status Code: " + ase.getStatusCode());
+            System.out.println("AWS Error Code:   " + ase.getErrorCode());
+            System.out.println("Error Type:       " + ase.getErrorType());
+            System.out.println("Request ID:       " + ase.getRequestId());
+        } catch (AmazonClientException ace) {
+            System.out.println("Caught an AmazonClientException, which " +
+                    "means the client encountered " +
+                    "an internal error while trying to " +
+                    "communicate with S3, " +
+                    "such as not being able to access the network.");
+            System.out.println("Error Message: " + ace.getMessage());
+        }
+    }
+
+    public int getReportId(int user_id, int classification, String description) {
+        final String REPORT_URL = "http://smartcommunity-dev2.us-east-1.elasticbeanstalk.com/api/reports";
+        try {
+            JSONArray jsonArray = JsonReader.readJsonFromUrl(REPORT_URL);
+            for (int x = 0; x < jsonArray.length(); x++) {
+                JSONObject jo = jsonArray.getJSONObject(x);
+                if (jo.getString("description").equals(description)
+                        && jo.getInt("issue_id") == classification
+                        && jo.getInt("user_id") == user_id) {
+                    return jo.getInt("id");
+                }
+            }
+
+        } catch (Exception e) {
+            Log.i("getReportId", "Stack trace:");
+            e.printStackTrace();
+        }
+        return -1;
     }
 
     private int parseClassification(String classification){
