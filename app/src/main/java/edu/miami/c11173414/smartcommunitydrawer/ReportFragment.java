@@ -1,10 +1,13 @@
 package edu.miami.c11173414.smartcommunitydrawer;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,13 +21,11 @@ import android.widget.Toast;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.CognitoCachingCredentialsProvider;
-import com.amazonaws.regions.Regions;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -97,7 +98,6 @@ public class ReportFragment extends Fragment {
         float lat = (float) curLoc.getLatitude();
         float lng = (float) curLoc.getLongitude();
         Toast.makeText(getActivity(), "Issue Classification is " + classification, Toast.LENGTH_SHORT).show();
-        int reportID;
 
         HttpURLConnection http = null;
         try {
@@ -145,12 +145,17 @@ public class ReportFragment extends Fragment {
 
             //at this point we need to now send and store the picture, but first get the report id of what we just created.
             if (reportIDNum != -1) {
-                File f = new File("image", reportIDNum + ".png");
+                String baseDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath();
+                File f = new File(baseDir + File.separator + reportIDNum + ".png");
+                Log.i("S3 send", f.getAbsolutePath() + " is the file path");
+                f.createNewFile();
                 // TODO: Fix sending pictures
                 FileOutputStream os = new FileOutputStream(f);
-                iv.getDrawingCache().compress(CompressFormat.PNG, 100, os);
+                Bitmap bm = ((BitmapDrawable)iv.getDrawable()).getBitmap();
+                bm.compress(CompressFormat.PNG, 100, os);
                 os.close();
                 uploadToS3(f);
+                f.delete();
             }
 
             ((MainActivity)getActivity()).displayView(new ClassifyFragment());
@@ -168,14 +173,12 @@ public class ReportFragment extends Fragment {
 
     public void uploadToS3(File f) {
         /* code in this method taken from AWS docs with practically zero alterations */
+        String ACCESS_KEY = ""; //insert access key
+        String SECRET_KEY = ""; //insert secret key
         String bucketName = "smartcommunity";
         String keyName = f.getName();
-        CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
-                getActivity().getApplicationContext(), // Context
-                "IDENTITY_POOL_ID", // Identity Pool ID
-                Regions.US_EAST_1 // Region
-        );
-        AmazonS3 s3client = new AmazonS3Client(credentialsProvider);
+        BasicAWSCredentials credentials = new BasicAWSCredentials(ACCESS_KEY, SECRET_KEY);
+        AmazonS3 s3client = new AmazonS3Client(credentials);
         try {
             System.out.println("Uploading a new object to S3 from a file\n");
             s3client.putObject(new PutObjectRequest(

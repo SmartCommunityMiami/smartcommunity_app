@@ -1,6 +1,7 @@
 package edu.miami.c11173414.smartcommunitydrawer;
 
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -65,6 +67,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         authToken = this.getIntent().getStringExtra(getPackageName()+".authToken");
         userID = this.getIntent().getIntExtra(getPackageName()+".userID", -1);
 
+        ActivityCompat.requestPermissions(this,
+                new String[] {
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                },
+                100);
 
         //TODO this better. As of now it is only workaround for NetworkOnMainThread Exception
         if (android.os.Build.VERSION.SDK_INT > 9) {
@@ -72,8 +80,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             StrictMode.setThreadPolicy(policy);
         }
 
-        //TODO actually get user id not set a default
-        userID = 2;
+//        //TODO actually get user id not set a default
+//        userID = 2;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -293,11 +301,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         locators = locationManager.getProviders(true);
         for (String aProvider : locators) {
             if (aProvider.equals(LocationManager.GPS_PROVIDER)) {
-                // Toast.makeText(this,"GPS available",Toast.LENGTH_LONG).show();
+                Toast.makeText(this,"GPS available",Toast.LENGTH_LONG).show();
                 gpsWorking = true;
                 try {
-                    locationManager.requestLocationUpdates(
-                            LocationManager.GPS_PROVIDER, getResources().getInteger(
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, getResources().getInteger(
                                     R.integer.time_between_location_updates_ms), 0, this);
                 }catch (SecurityException e){
                     Log.i("HAHA ", "Should handle this but not");
@@ -305,12 +312,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
             if (aProvider.equals(LocationManager.NETWORK_PROVIDER)) {
-                // Toast.makeText(this,"Network available",Toast.LENGTH_LONG).show();
+                Toast.makeText(this,"Network available",Toast.LENGTH_LONG).show();
                 netWorking = true;
                 try {
-                    locationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER, getResources().getInteger(
-                                    R.integer.time_between_location_updates_ms), 0, this);
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, getResources().getInteger(R.integer.time_between_location_updates_ms), 0, this);
                 }catch (SecurityException e){
                     Log.i("HAHA ", "Should handle this but not");
                     e.printStackTrace();
@@ -342,7 +347,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 errorMessage = e.getMessage();
             }
         }
-        // Toast.makeText(this,"No previous location available" + errorMessage, Toast.LENGTH_LONG).show();
+        Toast.makeText(this,"No previous location available" + errorMessage, Toast.LENGTH_LONG).show();
     }
 
     public int getUserId() {
@@ -422,7 +427,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             try (OutputStream wr = httpConn.getOutputStream()) {
                 wr.write(urlParameters.getBytes());
             }
-            if (httpConn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+            if(httpConn.getResponseCode() == 422){
+                //vote rejected for duplicate
+                Log.i("Vote", "rejected duplicate up/down vote");
+            } else if (httpConn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
                 throw new RuntimeException("Failed : HTTP error code : " + httpConn.getResponseCode());
             }
             BufferedReader br = new BufferedReader(new InputStreamReader((httpConn.getInputStream())));
@@ -486,7 +494,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     currentLocation = newLocation;
                     onLocationChanged(newLocation);
                 }else {
-                    // Toast.makeText(this, "No new location found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "No new location found", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case CAMERA_REQUEST:
