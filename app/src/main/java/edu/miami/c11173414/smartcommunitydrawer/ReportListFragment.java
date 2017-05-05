@@ -16,7 +16,7 @@ import java.util.HashMap;
 public class ReportListFragment extends ListFragment {
     // ListView theList;
     private JSONArray jsonArray;
-    private final String URL = "http://smartcommunity-dev2.us-east-1.elasticbeanstalk.com/api/reports";
+    private final String URL = "http://smart-community-dev.us-east-1.elasticbeanstalk.com/api/reports";
 
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
@@ -29,13 +29,14 @@ public class ReportListFragment extends ListFragment {
             Log.e("exceptions", "are annoying");
             e.printStackTrace();
         }
-        String[] fromHashMapFieldNames = {"name", "picture"};
-        int[] toListRowFieldIds = {R.id.listitem_description,R.id.listitem_pic};
+        String[] fromHashMapFieldNames = {"name", "picture", "id"};
+        int[] toListRowFieldIds = {R.id.listitem_description,R.id.listitem_pic, R.id.listitem_id};
         ArrayList<HashMap<String,Object>> listItems = new ArrayList<HashMap<String,Object>>();
         for(int i = 0; i < jsonArray.length(); i++) {
             HashMap<String, Object> map = new HashMap<String, Object>();
             try {
                 map.put("name", jsonArray.getJSONObject(i).getString("description"));
+                map.put("id", jsonArray.getJSONObject(i).getInt("id"));
             } catch (Exception e) {
                 Log.e("ReportListView", "failure retriving username from json array/object. Stack trace:\n");
                 e.printStackTrace();

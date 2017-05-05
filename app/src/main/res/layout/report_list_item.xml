@@ -14,14 +14,22 @@
             android:onClick="myClickHandler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:src="@drawable/ic_small_up"/>
+        <TextView
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/listitem_score"
+            android:textSize="30sp"
+            android:text="0"/>
         <ImageView
             android:id="@+id/downvote_icon"
             android:onClick="myClickHandler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:src="@drawable/ic_small_down"/>
 
     </LinearLayout>
@@ -32,6 +40,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:src="@drawable/ic_menu_camera"/>
+
     <TextView
         android:id="@+id/listitem_description"
         android:gravity="center"
@@ -40,4 +49,11 @@
         android:layout_height="match_parent"
         android:textSize="20sp"
         android:text="Report Description"/>
+    <TextView
+        android:id="@+id/listitem_id"
+        android:gravity="center"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:text="0"/>
 </LinearLayout>

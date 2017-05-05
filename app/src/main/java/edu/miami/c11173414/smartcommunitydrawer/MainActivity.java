@@ -28,6 +28,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, LocationListener {
@@ -39,10 +47,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected String userFullName;
     public LocationManager locationManager;
     public Location currentLocation;
+    public String authToken;
+    private int userID;
     private Boolean gpsWorking = false;
     private Boolean netWorking = false;
-
-    private int user_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         sessionUser = this.getIntent().getStringExtra(getPackageName()+".username");
         userFullName = this.getIntent().getStringExtra(getPackageName()+".fullname");
+        authToken = this.getIntent().getStringExtra(getPackageName()+".authToken");
+        userID = this.getIntent().getIntExtra(getPackageName()+".userID", -1);
 
 
         //TODO this better. As of now it is only workaround for NetworkOnMainThread Exception
@@ -63,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         //TODO actually get user id not set a default
-        user_id = 2;
+        userID = 2;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -99,7 +109,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void myClickHandler(View view) {
-        Toast.makeText(this, "Hello!", Toast.LENGTH_SHORT).show();
         switch (view.getId()){
             case R.id.report_button:
                 displayView(R.id.nav_report);
@@ -124,13 +133,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.upvote_icon:
                 ImageView theImage = (ImageView)view;
-                LinearLayout parent = (LinearLayout)view.getParent();
+
+                LinearLayout parent = (LinearLayout)theImage.getParent();
                 parent.setBackgroundColor(Color.parseColor("#00FF00"));
+
+                LinearLayout listItem = (LinearLayout) parent.getParent();
+                TextView reportIDfield = (TextView) (listItem.findViewById(R.id.listitem_id));
+                int reportID = Integer.parseInt(reportIDfield.getText().toString());
+                // Toast.makeText(this, "Upvoted report " + reportID, Toast.LENGTH_SHORT).show();
+                vote(reportID, 1);
                 break;
             case R.id.downvote_icon:
                 theImage = (ImageView)view;
-                parent = (LinearLayout)view.getParent();
+
+                parent = (LinearLayout)theImage.getParent();
                 parent.setBackgroundColor(Color.parseColor("#FF0000"));
+
+                listItem = (LinearLayout) parent.getParent();
+                reportIDfield = (TextView) (listItem.findViewById(R.id.listitem_id));
+                reportID = Integer.parseInt(reportIDfield.getText().toString());
+                // Toast.makeText(this, "Downvoted report " + reportID, Toast.LENGTH_SHORT).show();
+                vote(reportID, -1);
                 break;
             case R.id.location_change_button:
                 // TODO: create map interface to select new location
@@ -270,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         locators = locationManager.getProviders(true);
         for (String aProvider : locators) {
             if (aProvider.equals(LocationManager.GPS_PROVIDER)) {
-                Toast.makeText(this,"GPS available",Toast.LENGTH_LONG).show();
+                // Toast.makeText(this,"GPS available",Toast.LENGTH_LONG).show();
                 gpsWorking = true;
                 try {
                     locationManager.requestLocationUpdates(
@@ -282,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
             if (aProvider.equals(LocationManager.NETWORK_PROVIDER)) {
-                Toast.makeText(this,"Network available",Toast.LENGTH_LONG).show();
+                // Toast.makeText(this,"Network available",Toast.LENGTH_LONG).show();
                 netWorking = true;
                 try {
                     locationManager.requestLocationUpdates(
@@ -319,11 +342,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 errorMessage = e.getMessage();
             }
         }
-        Toast.makeText(this,"No previous location available" + errorMessage, Toast.LENGTH_LONG).show();
+        // Toast.makeText(this,"No previous location available" + errorMessage, Toast.LENGTH_LONG).show();
     }
 
     public int getUserId() {
-        return user_id;
+        return userID;
     }
 
 
@@ -371,6 +394,54 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    public int vote(int reportID, int direction){
+        int currentScore = 0;
+        currentScore += direction;
+
+        try {
+            JSONObject jsonObject = new JSONObject();
+            JSONObject voteObject = new JSONObject();
+            voteObject.put("user_id", userID);
+            voteObject.put("direction", direction);
+            voteObject.put("report_id", reportID);
+            jsonObject.put("vote", voteObject);
+            String urlParameters = jsonObject.toString();
+
+            URL url = new URL("http://smart-community-dev.us-east-1.elasticbeanstalk.com/api/votes");
+            URLConnection connection = url.openConnection();
+            HttpURLConnection httpConn = (HttpURLConnection)connection;
+            httpConn.setRequestMethod("POST");
+            httpConn.setDoOutput(true);
+            httpConn.setInstanceFollowRedirects(false);
+            httpConn.setRequestProperty("Content-Type", "application/json");
+            httpConn.setRequestProperty("charset", "utf-8");
+            httpConn.setRequestProperty("Accept", "application/json");
+            httpConn.setRequestProperty("Authorization", authToken);
+            httpConn.setUseCaches(false);
+
+            try (OutputStream wr = httpConn.getOutputStream()) {
+                wr.write(urlParameters.getBytes());
+            }
+            if (httpConn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+                throw new RuntimeException("Failed : HTTP error code : " + httpConn.getResponseCode());
+            }
+            BufferedReader br = new BufferedReader(new InputStreamReader((httpConn.getInputStream())));
+            String output;
+            System.out.println("Output from Server .... \n");
+
+            StringBuilder response = new StringBuilder();
+            while ((output = br.readLine()) != null) {
+                response.append(output);
+                System.out.println("Reading server output...");
+            }
+            Log.i("Main.Vote()", response.toString());
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return currentScore;
+    }
+
     @Override
     public void onStatusChanged(String s, int i, Bundle bundle) {
 
@@ -415,7 +486,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     currentLocation = newLocation;
                     onLocationChanged(newLocation);
                 }else {
-                    Toast.makeText(this, "No new location found", Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(this, "No new location found", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case CAMERA_REQUEST:

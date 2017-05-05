@@ -50,7 +50,7 @@ public class ReportFragment extends Fragment {
         Button upload = null, take = null, submit = null;
         View fragmentView = inflater.inflate(R.layout.fragment_report, container, false);
         TextView classText;
-        iv = (ImageView) getView().findViewById(R.id.report_photo);
+        iv = (ImageView) fragmentView.findViewById(R.id.report_photo);
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             classText = (TextView) fragmentView.findViewById(R.id.reportClassText);
@@ -96,7 +96,7 @@ public class ReportFragment extends Fragment {
     private boolean sendReport(String description, int classification, Location curLoc, int user_id) {
         float lat = (float) curLoc.getLatitude();
         float lng = (float) curLoc.getLongitude();
-        Toast.makeText(getActivity(), "Issue ID is " + classification, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Issue Classification is " + classification, Toast.LENGTH_SHORT).show();
         int reportID;
 
         HttpURLConnection http = null;
@@ -110,7 +110,7 @@ public class ReportFragment extends Fragment {
             details.put("longitude", lng);
             report.put("report", details);
             String urlParameters = report.toString();
-            URL url = new URL("http://smartcommunity-dev.us-east-1.elasticbeanstalk.com/api/reports");
+            URL url = new URL("http://smart-community-dev.us-east-1.elasticbeanstalk.com/api/reports");
             URLConnection con = url.openConnection();
             http = (HttpURLConnection) con;
             http.setRequestMethod("POST"); // PUT is another valid option
@@ -119,6 +119,7 @@ public class ReportFragment extends Fragment {
             http.setRequestProperty("Content-Type", "application/json");
             http.setRequestProperty("charset", "utf-8");
             http.setRequestProperty("Accept", "application/json");
+            http.setRequestProperty("Authorization", ((MainActivity)getActivity()).authToken);
             http.setUseCaches(false);
 
             try (OutputStream wr = http.getOutputStream()) {
@@ -131,21 +132,28 @@ public class ReportFragment extends Fragment {
             BufferedReader br = new BufferedReader(new InputStreamReader((http.getInputStream())));
             String output;
             System.out.println("Output from Server .... \n");
+
+            StringBuilder response = new StringBuilder();
             while ((output = br.readLine()) != null) {
-                System.out.println(output);
+                response.append(output);
+                System.out.println("Reading server output...");
             }
             Toast.makeText(getActivity(), "Report created!", Toast.LENGTH_LONG).show();
-            ((MainActivity)getActivity()).displayView(new ClassifyFragment());
+
+            JSONObject responseHolder = new JSONObject(response.toString());
+            int reportIDNum = responseHolder.getInt("id");
 
             //at this point we need to now send and store the picture, but first get the report id of what we just created.
-            reportID = getReportId(user_id, classification, description);
-            if (reportID != -1) {
-                File f = new File("image", reportID + ".png");
+            if (reportIDNum != -1) {
+                File f = new File("image", reportIDNum + ".png");
+                // TODO: Fix sending pictures
                 FileOutputStream os = new FileOutputStream(f);
                 iv.getDrawingCache().compress(CompressFormat.PNG, 100, os);
                 os.close();
                 uploadToS3(f);
             }
+
+            ((MainActivity)getActivity()).displayView(new ClassifyFragment());
             return true;
         } catch (Exception e) {
             Log.i("sendCreateAcc: ", "Something went wrong"); //saying something is wrong isnt
@@ -193,25 +201,25 @@ public class ReportFragment extends Fragment {
         }
     }
 
-    public int getReportId(int user_id, int classification, String description) {
-        final String REPORT_URL = "http://smartcommunity-dev2.us-east-1.elasticbeanstalk.com/api/reports";
-        try {
-            JSONArray jsonArray = JsonReader.readJsonFromUrl(REPORT_URL);
-            for (int x = 0; x < jsonArray.length(); x++) {
-                JSONObject jo = jsonArray.getJSONObject(x);
-                if (jo.getString("description").equals(description)
-                        && jo.getInt("issue_id") == classification
-                        && jo.getInt("user_id") == user_id) {
-                    return jo.getInt("id");
-                }
-            }
-
-        } catch (Exception e) {
-            Log.i("getReportId", "Stack trace:");
-            e.printStackTrace();
-        }
-        return -1;
-    }
+//    public int getReportId(int user_id, int classification, String description) {
+//        final String REPORT_URL = "http://smart-community-dev.us-east-1.elasticbeanstalk.com/api/reports";
+//        try {
+//            JSONArray jsonArray = JsonReader.readJsonFromUrl(REPORT_URL);
+//            for (int x = 0; x < jsonArray.length(); x++) {
+//                JSONObject jo = jsonArray.getJSONObject(x);
+//                if (jo.getString("description").equals(description)
+//                        && jo.getInt("issue_id") == classification
+//                        && jo.getInt("user_id") == user_id) {
+//                    return jo.getInt("id");
+//                }
+//            }
+//
+//        } catch (Exception e) {
+//            Log.i("getReportId", "Stack trace:");
+//            e.printStackTrace();
+//        }
+//        return -1;
+//    }
 
     private int parseClassification(String classification){
         int classNumber = 0;

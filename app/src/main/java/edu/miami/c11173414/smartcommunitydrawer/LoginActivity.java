@@ -21,8 +21,9 @@ public class LoginActivity extends AppCompatActivity {
     private static final int ACTIVITY_MAIN_APP = 1;
     private static final int ACTIVITY_CREATE_ACCOUNT = 2;
     private EditText userField, passField;
-    private final String LOGIN_LINK = "http://smartcommunity-dev.us-east-1.elasticbeanstalk.com/api/login/";
-
+    private final String LOGIN_LINK = "http://smart-community-dev.us-east-1.elasticbeanstalk.com/api/sessions/";
+    private int userID;
+    private String authToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +63,8 @@ public class LoginActivity extends AppCompatActivity {
                 nextActivity.setClassName(getPackageName(), getPackageName() + ".MainActivity");
                 nextActivity.putExtra(getPackageName()+".username", username);
                 nextActivity.putExtra(getPackageName()+".fullname", fullname);
+                nextActivity.putExtra(getPackageName()+".authToken", authToken);
+                nextActivity.putExtra(getPackageName()+".userID", userID);
                 startActivityForResult(nextActivity, ACTIVITY_MAIN_APP);
                 break;
             case R.id.create_account_link:
@@ -99,12 +102,12 @@ public class LoginActivity extends AppCompatActivity {
     private boolean sendLoginSessionPost(String username, String password) {
         HttpURLConnection conn = null;
         try {
-            JSONObject session = new JSONObject();
+//            JSONObject session = new JSONObject();
             JSONObject details = new JSONObject();
             details.put("username", username);
             details.put("password", password);
-            session.put("sessions", details);
-            String urlParameters = session.toString();
+//            session.put("sessions", details);
+            String urlParameters = details.toString();
             String requestURL = LOGIN_LINK;
             URL url = new URL(requestURL);
             conn = (HttpURLConnection) url.openConnection();
@@ -129,9 +132,24 @@ public class LoginActivity extends AppCompatActivity {
             BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
             String output;
             System.out.println("Output from Server .... \n");
+
+            StringBuilder response = new StringBuilder();
+
             while ((output = br.readLine()) != null) {
-                System.out.println(output);
+                // System.out.println(output);
+                response.append(output);
+                System.out.println("Reading server output...");
             }
+
+            System.out.println("Done! User is:\n" + response.toString());
+
+            JSONObject holdingObject = new JSONObject(response.toString());
+            // JSONObject userObject = holdingObject.getJSONObject("User");
+            authToken = holdingObject.getString("auth_token");
+            userID = holdingObject.getInt("id");
+
+
+
             Log.i("response", "output done.");
             return true;
         } catch (Exception e) {
