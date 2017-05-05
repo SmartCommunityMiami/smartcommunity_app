@@ -19,7 +19,7 @@ import java.net.URL;
 
 public class CreateAccountActivity extends Activity {
 
-    private final String USERS_LINK = "http://smartcommunity-dev.us-east-1.elasticbeanstalk.com/users/";
+    private final String USERS_LINK = "http://smartcommunity-dev.us-east-1.elasticbeanstalk.com/api/users/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

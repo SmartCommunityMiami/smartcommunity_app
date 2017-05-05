@@ -21,7 +21,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final int ACTIVITY_MAIN_APP = 1;
     private static final int ACTIVITY_CREATE_ACCOUNT = 2;
     private EditText userField, passField;
-    private final String LOGIN_LINK = "http://smartcommunity-dev.us-east-1.elasticbeanstalk.com/login/";
+    private final String LOGIN_LINK = "http://smartcommunity-dev.us-east-1.elasticbeanstalk.com/api/login/";
 
 
     @Override
@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
             JSONObject details = new JSONObject();
             details.put("username", username);
             details.put("password", password);
-            session.put("session", details);
+            session.put("sessions", details);
             String urlParameters = session.toString();
             String requestURL = LOGIN_LINK;
             URL url = new URL(requestURL);
@@ -111,6 +111,7 @@ public class LoginActivity extends AppCompatActivity {
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
             conn.setInstanceFollowRedirects(false);
+            conn.setConnectTimeout(5000);
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("charset", "utf-8");
             conn.setRequestProperty("Accept", "application/json");
