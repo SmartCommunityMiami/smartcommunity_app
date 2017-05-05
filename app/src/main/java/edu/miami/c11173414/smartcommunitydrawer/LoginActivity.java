@@ -53,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(this, "Username or password incorrect.", Toast.LENGTH_SHORT).show();
                     // break so we dont start activity and they can try again.
                     // Leave break commented until andrew fixes http 500 error
-                    // break;
+                    break;
                 }
 
                 // TODO: Get e-mail or username string (i.e. username blakem2018 -> "Blake Maune")

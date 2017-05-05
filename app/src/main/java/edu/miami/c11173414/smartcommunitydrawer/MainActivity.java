@@ -72,8 +72,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             StrictMode.setThreadPolicy(policy);
         }
 
-        //TODO actually get user id not set a default
-        userID = 2;
+//        //TODO actually get user id not set a default
+//        userID = 2;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -293,11 +293,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         locators = locationManager.getProviders(true);
         for (String aProvider : locators) {
             if (aProvider.equals(LocationManager.GPS_PROVIDER)) {
-                // Toast.makeText(this,"GPS available",Toast.LENGTH_LONG).show();
+                Toast.makeText(this,"GPS available",Toast.LENGTH_LONG).show();
                 gpsWorking = true;
                 try {
-                    locationManager.requestLocationUpdates(
-                            LocationManager.GPS_PROVIDER, getResources().getInteger(
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, getResources().getInteger(
                                     R.integer.time_between_location_updates_ms), 0, this);
                 }catch (SecurityException e){
                     Log.i("HAHA ", "Should handle this but not");
@@ -305,12 +304,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
             if (aProvider.equals(LocationManager.NETWORK_PROVIDER)) {
-                // Toast.makeText(this,"Network available",Toast.LENGTH_LONG).show();
+                Toast.makeText(this,"Network available",Toast.LENGTH_LONG).show();
                 netWorking = true;
                 try {
-                    locationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER, getResources().getInteger(
-                                    R.integer.time_between_location_updates_ms), 0, this);
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, getResources().getInteger(R.integer.time_between_location_updates_ms), 0, this);
                 }catch (SecurityException e){
                     Log.i("HAHA ", "Should handle this but not");
                     e.printStackTrace();
@@ -342,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 errorMessage = e.getMessage();
             }
         }
-        // Toast.makeText(this,"No previous location available" + errorMessage, Toast.LENGTH_LONG).show();
+        Toast.makeText(this,"No previous location available" + errorMessage, Toast.LENGTH_LONG).show();
     }
 
     public int getUserId() {
@@ -422,7 +419,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             try (OutputStream wr = httpConn.getOutputStream()) {
                 wr.write(urlParameters.getBytes());
             }
-            if (httpConn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+            if(httpConn.getResponseCode() == 422){
+                //vote rejected for duplicate
+                Log.i("Vote", "rejected duplicate up/down vote");
+            } else if (httpConn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
                 throw new RuntimeException("Failed : HTTP error code : " + httpConn.getResponseCode());
             }
             BufferedReader br = new BufferedReader(new InputStreamReader((httpConn.getInputStream())));
@@ -486,7 +486,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     currentLocation = newLocation;
                     onLocationChanged(newLocation);
                 }else {
-                    // Toast.makeText(this, "No new location found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "No new location found", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case CAMERA_REQUEST:
