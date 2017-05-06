@@ -173,8 +173,8 @@ public class ReportFragment extends Fragment {
 
     public void uploadToS3(File f) {
         /* code in this method taken from AWS docs with practically zero alterations */
-        String ACCESS_KEY = "";
-        String SECRET_KEY = "";
+        String ACCESS_KEY = ""; //insert access key
+        String SECRET_KEY = ""; //insert secret key
         String bucketName = "smartcommunity";
         String keyName = f.getName();
         BasicAWSCredentials credentials = new BasicAWSCredentials(ACCESS_KEY, SECRET_KEY);
