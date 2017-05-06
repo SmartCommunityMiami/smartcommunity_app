@@ -1,6 +1,7 @@
 package edu.miami.c11173414.smartcommunitydrawer;
 
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -65,6 +67,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         authToken = this.getIntent().getStringExtra(getPackageName()+".authToken");
         userID = this.getIntent().getIntExtra(getPackageName()+".userID", -1);
 
+        ActivityCompat.requestPermissions(this,
+                new String[] {
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                },
+                100);
 
         //TODO this better. As of now it is only workaround for NetworkOnMainThread Exception
         if (android.os.Build.VERSION.SDK_INT > 9) {
