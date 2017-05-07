@@ -1,5 +1,6 @@
 package edu.miami.c11173414.smartcommunitydrawer;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -10,7 +11,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 public class ClassifyFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     Spinner dropDown1, dropDown2, dropDown3;
@@ -18,6 +25,11 @@ public class ClassifyFragment extends Fragment implements View.OnClickListener, 
 
     public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
         View fragView = inflater.inflate(R.layout.fragment_classify, container,false);
+
+        if(((MainActivity)getActivity()).currentLocation != null){
+            DecodeLocation d = new DecodeLocation(getActivity().getApplicationContext(), getActivity());
+            ((TextView)(fragView.findViewById(R.id.current_location))).setText(d.doInBackground(((MainActivity)getActivity()).currentLocation));
+        }
 
         dropDown1 = (Spinner) fragView.findViewById(R.id.classification_spinner1);
         dropDown2 = (Spinner) fragView.findViewById(R.id.classification_spinner2);
@@ -49,18 +61,66 @@ public class ClassifyFragment extends Fragment implements View.OnClickListener, 
                     selectionText += dropDown3.getSelectedItem().toString();
                 }
 
-                Toast.makeText(getActivity(),
-                        selectionText,
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), selectionText, Toast.LENGTH_LONG).show();
                 Log.i("Classification:", selectionText);
-                Fragment newReport = new ReportFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("Classification", selectionText);
-                newReport.setArguments(bundle);
-                ((MainActivity)getActivity()).displayView(newReport);
+
+                ArrayList<Integer> duplicateIDs = checkDuplicates(selectionText);
+                if(duplicateIDs.size() == 0) {
+                    // Send directly to new report fragment
+                    Log.i("Classify", "no duplicates found, starting new report");
+                    Fragment newReport = new ReportFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("Classification", selectionText);
+                    newReport.setArguments(bundle);
+                    ((MainActivity)getActivity()).displayView(newReport);
+                }else{
+                    Log.i("Classify", "duplicates found, displaying");
+                    Fragment duplicateList = new DuplicateListFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putIntArray("reportIDArray", SearchFragment.ArrayConvert(duplicateIDs));
+                    bundle.putString("Classification", selectionText);
+                    duplicateList.setArguments(bundle);
+                    ((MainActivity)getActivity()).displayView(duplicateList);
+                }
             default:
                 break;
         }
+    }
+
+    private ArrayList<Integer> checkDuplicates(String classString){
+        // Initialize the report id array we will send in bundle
+        ArrayList<Integer> reportIDs = new ArrayList<Integer>();
+
+        // Get the location from main
+        Location loc = ((MainActivity)getActivity()).currentLocation;
+
+        // Get our JSON to search through
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray = JsonReader.readJsonFromUrl("http://smart-community-dev.us-east-1.elasticbeanstalk.com/api/reports");
+            Log.i("output", jsonArray.toString());
+        } catch (Exception e) {
+            Log.e("exceptions", "are annoying");
+            e.printStackTrace();
+        }
+
+        // Get the classification of our new report
+        int classification = ReportFragment.parseClassification(classString);
+
+        // Search for report ids that match location, then classification
+        ArrayList<Integer> nearbyReportIDs = SearchFragment.searchByRadius(jsonArray, loc, 1500);
+        ArrayList<Integer> sameClassIDs = SearchFragment.searchByClassification(jsonArray, classification);
+
+        // Find the report ids that are in both, add them to our output array
+        for(int i: nearbyReportIDs){
+            for(int j:sameClassIDs){
+                if(i == j){
+                    reportIDs.add(i);
+                }
+            }
+        }
+
+        return reportIDs;
     }
 
     private void setSpinnerArray(Spinner s, int i){

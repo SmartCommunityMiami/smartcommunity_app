@@ -24,6 +24,7 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import org.json.JSONObject;
@@ -181,8 +182,9 @@ public class ReportFragment extends Fragment {
         AmazonS3 s3client = new AmazonS3Client(credentials);
         try {
             System.out.println("Uploading a new object to S3 from a file\n");
-            s3client.putObject(new PutObjectRequest(
-                    bucketName, keyName, f));
+            PutObjectRequest request = new PutObjectRequest(bucketName, keyName, f);
+            request.setCannedAcl(CannedAccessControlList.PublicRead);
+            s3client.putObject(request);
             Log.i("upToS3", "File successfully uploaded");
         } catch (AmazonServiceException ase) {
             System.out.println("Caught an AmazonServiceException, which " +
@@ -224,7 +226,7 @@ public class ReportFragment extends Fragment {
 //        return -1;
 //    }
 
-    private int parseClassification(String classification){
+    public static int parseClassification(String classification){
         int classNumber = 0;
         if(classification.contains("Broken/Missing Water Cover")){classNumber = 1;}
         if(classification.contains("Water Main Break")){classNumber = 2;}

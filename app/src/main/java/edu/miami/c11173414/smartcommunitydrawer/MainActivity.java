@@ -3,6 +3,7 @@ package edu.miami.c11173414.smartcommunitydrawer;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -25,11 +27,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -38,7 +43,11 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.DecimalFormat;
 import java.util.List;
+
+import static android.R.attr.height;
+import static android.R.attr.width;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, LocationListener {
     private static final int ACTIVITY_SELECT_PICTURE = 1; // Activity ID for picture selection
@@ -133,7 +142,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.report_photo:
                 break;
             case R.id.listitem_pic:
-                // Consider adding a zoom function, using zoomdialog
+                LinearLayout listItem = (LinearLayout) view.getParent();
+                TextView reportIDfield = (TextView) (listItem.findViewById(R.id.listitem_id));
+                int reportID = Integer.parseInt(reportIDfield.getText().toString());
+                try {
+                    DecimalFormat format = new DecimalFormat("00.000");
+                    JSONObject jo = new JSONObject(readUrl("http://smart-community-dev.us-east-1.elasticbeanstalk.com/api/reports/" + reportID));
+                    String issueType = jo.getJSONObject("issue").getString("description");
+                    String reportDescription = jo.getString("description");
+                    String firstName = jo.getJSONObject("user").getString("first_name");
+                    String lastName = jo.getJSONObject("user").getString("last_name");
+                    String username = firstName + " " + lastName;
+                    Location tmp = new Location("");
+                    tmp.setLatitude(jo.getDouble("latitude"));
+                    tmp.setLongitude(jo.getDouble("longitude"));
+                    DecodeLocation d = new DecodeLocation(getApplicationContext(),this);
+                    String location = d.doInBackground(tmp);
+                    String createdAt = jo.getString("created_at");
+                    createdAt = createdAt.substring(0, 10);
+                    int votes = jo.getInt("votes");
+                    String picURL = ReportListFragment.buildPicURL(jo.getInt("id"));
+                    Bundle args = new Bundle();
+                    args.putString("issueType", issueType);
+                    args.putString("reportDescription", reportDescription);
+                    args.putString("username", username);
+                    args.putString("location", location);
+                    args.putString("createdAt", createdAt);
+                    args.putInt("votes", votes);
+                    args.putString("picURL", picURL);
+                    DialogFragment dialogFragment = new ReportDetailsDialog();
+                    dialogFragment.setArguments(args);
+                    dialogFragment.show(getFragmentManager(), "my_fragment");
+
+
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+
                 break;
             case R.id.search_go_button:
                 displayView(new ReportListFragment());
@@ -143,25 +188,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 ImageView theImage = (ImageView)view;
 
                 LinearLayout parent = (LinearLayout)theImage.getParent();
+                TextView scoreText = (TextView)(parent.findViewById(R.id.listitem_score));
                 parent.setBackgroundColor(Color.parseColor("#00FF00"));
 
-                LinearLayout listItem = (LinearLayout) parent.getParent();
-                TextView reportIDfield = (TextView) (listItem.findViewById(R.id.listitem_id));
-                int reportID = Integer.parseInt(reportIDfield.getText().toString());
-                // Toast.makeText(this, "Upvoted report " + reportID, Toast.LENGTH_SHORT).show();
+                listItem = (LinearLayout) parent.getParent();
+                reportIDfield = (TextView) (listItem.findViewById(R.id.listitem_id));
+                reportID = Integer.parseInt(reportIDfield.getText().toString());
                 vote(reportID, 1);
+
+                try {
+                    JSONObject jo = new JSONObject(readUrl("http://smart-community-dev.us-east-1.elasticbeanstalk.com/api/reports/" + reportID));
+                    Log.i("Upvote: ", jo.toString());
+                    int score = jo.getInt("votes");
+                    scoreText.setText(score + "");
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                // Toast.makeText(this, "Upvoted report " + reportID, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.downvote_icon:
                 theImage = (ImageView)view;
 
                 parent = (LinearLayout)theImage.getParent();
                 parent.setBackgroundColor(Color.parseColor("#FF0000"));
+                scoreText = (TextView)(parent.findViewById(R.id.listitem_score));
 
                 listItem = (LinearLayout) parent.getParent();
                 reportIDfield = (TextView) (listItem.findViewById(R.id.listitem_id));
                 reportID = Integer.parseInt(reportIDfield.getText().toString());
                 // Toast.makeText(this, "Downvoted report " + reportID, Toast.LENGTH_SHORT).show();
                 vote(reportID, -1);
+
+                try {
+                    JSONObject jo = new JSONObject(readUrl("http://smart-community-dev.us-east-1.elasticbeanstalk.com/api/reports/" + reportID));
+                    int score = jo.getInt("votes");
+                    scoreText.setText(score + "");
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+
                 break;
             case R.id.location_change_button:
                 // TODO: create map interface to select new location
@@ -505,6 +570,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     pictureView.setImageBitmap(imageBitmap);
                 }
                 break;
+        }
+    }
+
+    private static String readUrl(String urlString) throws Exception {
+        BufferedReader reader = null;
+        try {
+            URL url = new URL(urlString);
+            reader = new BufferedReader(new InputStreamReader(url.openStream()));
+            StringBuffer buffer = new StringBuffer();
+            int read;
+            char[] chars = new char[1024];
+            while ((read = reader.read(chars)) != -1)
+                buffer.append(chars, 0, read);
+
+            return buffer.toString();
+        } finally {
+            if (reader != null)
+                reader.close();
         }
     }
 }

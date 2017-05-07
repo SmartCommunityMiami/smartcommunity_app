@@ -12,35 +12,98 @@
         android:gravity="center"
         android:textSize="40sp"
         android:text="Search"/>
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Search terms"/>
 
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Severity"/>
+        android:text="Search by:"/>
     <RadioGroup
+        android:id="@+id/filterSelect"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <RadioButton
+            android:id="@+id/nearMeRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Low"/>
+            android:text="Near Me"/>
         <RadioButton
+            android:id="@+id/scoreRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Medium"/>
+            android:text="Score"/>
         <RadioButton
+            android:id="@+id/issueTypeRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="High"/>
+            android:text="Issue Type"/>
     </RadioGroup>
+
+    <LinearLayout
+        android:id="@+id/radiusView"
+        android:padding="20dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/radiusDisplay"
+            android:gravity="center"
+            android:text="Radius: 0.00 feet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <SeekBar
+            android:id="@+id/radiusSeeker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/scoreView"
+        android:padding="20dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/minScoreEntry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Enter minimum score"
+            android:inputType="number"
+            android:paddingTop="10dp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/classifyView"
+        android:padding="20dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="What is the issue?"/>
+        <Spinner
+            android:id="@+id/classification_spinner1"
+            android:layout_margin="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <Spinner
+            android:clickable="false"
+            android:id="@+id/classification_spinner2"
+            android:layout_margin="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <Spinner
+            android:clickable="false"
+            android:id="@+id/classification_spinner3"
+            android:layout_margin="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 
     <Button
         android:id="@+id/search_go_button"
