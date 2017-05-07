@@ -372,7 +372,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         locators = locationManager.getProviders(true);
         for (String aProvider : locators) {
             if (aProvider.equals(LocationManager.GPS_PROVIDER)) {
-                Toast.makeText(this,"GPS available",Toast.LENGTH_LONG).show();
+                Toast.makeText(this,"GPS available",Toast.LENGTH_SHORT).show();
                 gpsWorking = true;
                 try {
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, getResources().getInteger(
@@ -383,7 +383,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
             if (aProvider.equals(LocationManager.NETWORK_PROVIDER)) {
-                Toast.makeText(this,"Network available",Toast.LENGTH_LONG).show();
+                Toast.makeText(this,"Network available",Toast.LENGTH_SHORT).show();
                 netWorking = true;
                 try {
                     locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, getResources().getInteger(R.integer.time_between_location_updates_ms), 0, this);
@@ -408,17 +408,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         while (currentLocation == null && providerIndex < providers.length) {
             try {
-                if ((lastLocation = locationManager.getLastKnownLocation(providers[providerIndex])) != null && (System.currentTimeMillis() - lastLocation.getTime()) < getResources().getInteger(R.integer.threshold_for_last_location_ms)) {
-                    currentLocation = lastLocation;
-                    onLocationChanged(currentLocation);
-                    return;
-                }
+                currentLocation = locationManager.getLastKnownLocation(providers[providerIndex]);
+                onLocationChanged(currentLocation);
                 providerIndex++;
+                return;
             } catch (SecurityException e) {
                 errorMessage = e.getMessage();
             }
         }
-        Toast.makeText(this,"No previous location available" + errorMessage, Toast.LENGTH_LONG).show();
+        // Toast.makeText(this,"No previous location available" + errorMessage, Toast.LENGTH_LONG).show();
     }
 
     public int getUserId() {
@@ -434,6 +432,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Also get info to send to API
      */
     public void onLocationChanged(Location newLocation) {
+        Toast.makeText(this, "New location found", Toast.LENGTH_SHORT).show();
         Log.i("onLocationChanged: ", "New location\n("+newLocation.getLatitude()+", "+newLocation.getLongitude());
 
         // NEW CODE 5/1 FIX LOCATION
@@ -445,6 +444,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         DecodeLocation d = new DecodeLocation(getApplicationContext(),this);
         String decoded = d.doInBackground(newLocation);
+        // Toast.makeText(this, "You're @ " + decoded, Toast.LENGTH_SHORT).show();
         String verbose = d.doInBackground(newLocation);
         Log.i("onLocationChanged: ", "decoded location is " + verbose);
 
@@ -455,10 +455,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }catch (Exception e){
             e.printStackTrace();
         }
-
-
-
     }
+
+
     @Override
     public void onPause() {
         super.onPause();

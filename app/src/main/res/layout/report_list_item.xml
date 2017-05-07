@@ -49,11 +49,13 @@
         android:layout_height="match_parent"
         android:textSize="20sp"
         android:text="Report Description"/>
+
     <TextView
         android:id="@+id/listitem_id"
         android:gravity="center"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="match_parent"
+        android:visibility="gone"
         android:text="0"/>
 </LinearLayout>
