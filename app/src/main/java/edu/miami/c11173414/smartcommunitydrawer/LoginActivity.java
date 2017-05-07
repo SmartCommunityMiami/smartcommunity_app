@@ -72,6 +72,15 @@ public class LoginActivity extends AppCompatActivity {
                 nextActivity.setClassName(getPackageName(), getPackageName() + ".CreateAccountActivity");
                 startActivityForResult(nextActivity, ACTIVITY_CREATE_ACCOUNT);
                 break;
+            case R.id.continue_as_guest:
+                nextActivity = new Intent();
+                nextActivity.setClassName(getPackageName(), getPackageName() + ".MainActivity");
+                nextActivity.putExtra(getPackageName()+".username", "Guest");
+                nextActivity.putExtra(getPackageName()+".fullname", "Guest");
+                nextActivity.putExtra(getPackageName()+".authToken", authToken);
+                nextActivity.putExtra(getPackageName()+".userID", -1);
+                startActivityForResult(nextActivity, ACTIVITY_MAIN_APP);
+                break;
             default:
                 break;
         }

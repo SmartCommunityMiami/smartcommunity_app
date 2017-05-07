@@ -43,13 +43,29 @@
             android:textAllCaps="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/create_account_link"
-            android:gravity="bottom"
-            android:onClick="loginClickHandler"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="Don't have an account? Create one"/>
+        <LinearLayout
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/create_account_link"
+                android:onClick="loginClickHandler"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Don't have an account? Create one."/>
+            <TextView
+                android:id="@+id/continue_as_guest"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:onClick="loginClickHandler"
+                android:text="Don't want an account? Continue as guest."
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

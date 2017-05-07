@@ -3,7 +3,7 @@ package edu.miami.c11173414.smartcommunitydrawer;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -27,14 +26,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -45,9 +41,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.text.DecimalFormat;
 import java.util.List;
-
-import static android.R.attr.height;
-import static android.R.attr.width;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, LocationListener {
     private static final int ACTIVITY_SELECT_PICTURE = 1; // Activity ID for picture selection
@@ -110,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //displayView(R.id.nav_user_info);
         displayView(new WelcomeLanding());
+
     }
 
     @Override
@@ -185,6 +179,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 viewIsAtHome = false;
                 break;
             case R.id.upvote_icon:
+                if (userID == -1) {
+                    Toast.makeText(this, "Guests are not allowed to vote on issues.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
                 ImageView theImage = (ImageView)view;
 
                 LinearLayout parent = (LinearLayout)theImage.getParent();
@@ -207,6 +205,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // Toast.makeText(this, "Upvoted report " + reportID, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.downvote_icon:
+                if (userID == -1) {
+                    Toast.makeText(this, "Guests are not allowed to vote on issues.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
                 theImage = (ImageView)view;
 
                 parent = (LinearLayout)theImage.getParent();
@@ -264,6 +266,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         Log.i("onNavItemSelect:", item.getItemId()+"");
+        if (userID == -1 && item.getItemId() != R.id.nav_logout) {
+            Toast.makeText(this, "Guests are not allowed to use the navigation bar besides logout.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         displayView(item.getItemId());
         return true;
     }
