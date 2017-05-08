@@ -56,6 +56,9 @@ These instructions will get you a copy of the project up and running on your loc
 
 * App should run successfully with these permissions enabled
   * Last version of app that is run on device will be stored there for future use
+  
+### Installing app for Android Mobile Device
+* Download APK from Smart Community's Github onto mobile device
 
 ## Versioning
 * Version 1.0
