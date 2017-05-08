@@ -409,9 +409,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         while (currentLocation == null && providerIndex < providers.length) {
             try {
                 currentLocation = locationManager.getLastKnownLocation(providers[providerIndex]);
-                onLocationChanged(currentLocation);
-                providerIndex++;
-                return;
+                if(currentLocation != null) {
+                    onLocationChanged(currentLocation);
+                    return;
+                }else {
+                    providerIndex++;
+                }
             } catch (SecurityException e) {
                 errorMessage = e.getMessage();
             }
@@ -565,6 +568,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     onLocationChanged(newLocation);
                 }else {
                     Toast.makeText(this, "No new location found", Toast.LENGTH_SHORT).show();
+                    currentLocation = null;
+                    onResume();
                 }
                 break;
             case CAMERA_REQUEST:
