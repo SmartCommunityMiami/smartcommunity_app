@@ -58,7 +58,8 @@ These instructions will get you a copy of the project up and running on your loc
   * Last version of app that is run on device will be stored there for future use
   
 ### Installing app for Android Mobile Device
-* Download APK from Smart Community's Github onto mobile device
+* Download APK from [Smart Community's Github](https://l.facebook.com/l.php?u=https%3A%2F%2Fgithub.com%2FSmartCommunityMiami%2Fsmartcommunity_app%2Fraw%2Fmaster%2FSmartCommunity%2520Mobile.apk&h=ATO_jY_v5x3-8_GJsRGOeqVi-i86k2W2PDjM6r1sn0WytTPx6wTn-kTkoauqM4DVdKE4D8TdxGrrZ_ltzIkG5_NRflKXEUK96g2hgiSUpvD01xFxhUEEPJRzwRRdZyvLifiL-OmVGWRouA) onto mobile device
+  * Allow your mobile device to install an app from Unknown Sources
 
 ## Versioning
 * Version 1.0
